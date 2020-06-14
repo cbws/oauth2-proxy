@@ -109,6 +109,7 @@ type OAuthProxy struct {
 	BasicAuthPassword    string
 	PassAccessToken      bool
 	SetAuthorization     bool
+	SetAuthorizationType string
 	PassAuthorization    bool
 	PreferEmailToUser    bool
 	skipAuthRegex        []string
@@ -343,6 +344,7 @@ func NewOAuthProxy(opts *options.Options, validator func(string) bool) *OAuthPro
 		BasicAuthPassword:    opts.BasicAuthPassword,
 		PassAccessToken:      opts.PassAccessToken,
 		SetAuthorization:     opts.SetAuthorization,
+		SetAuthorizationType: opts.SetAuthorizationType,
 		PassAuthorization:    opts.PassAuthorization,
 		PreferEmailToUser:    opts.PreferEmailToUser,
 		SkipProviderButton:   opts.SkipProviderButton,
@@ -1096,8 +1098,15 @@ func (p *OAuthProxy) addHeadersForProxying(rw http.ResponseWriter, req *http.Req
 		}
 	}
 	if p.SetAuthorization {
-		if session.IDToken != "" {
-			rw.Header().Set("Authorization", fmt.Sprintf("Bearer %s", session.IDToken))
+		var token string
+		if p.SetAuthorizationType == "" || p.SetAuthorizationType == "id-token" {
+			token = session.IDToken
+		}
+		if p.SetAuthorizationType == "access-token" {
+			token = session.AccessToken
+		}
+		if token != "" {
+			rw.Header().Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		} else {
 			rw.Header().Del("Authorization")
 		}

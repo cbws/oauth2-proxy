@@ -80,6 +80,7 @@ type Options struct {
 	SSLUpstreamInsecureSkipVerify bool          `flag:"ssl-upstream-insecure-skip-verify" cfg:"ssl_upstream_insecure_skip_verify"`
 	SetXAuthRequest               bool          `flag:"set-xauthrequest" cfg:"set_xauthrequest"`
 	SetAuthorization              bool          `flag:"set-authorization-header" cfg:"set_authorization_header"`
+	SetAuthorizationType          string        `flag:"set-authorization-type" cfg:"set_authorization_type"`
 	PassAuthorization             bool          `flag:"pass-authorization-header" cfg:"pass_authorization_header"`
 	SkipAuthPreflight             bool          `flag:"skip-auth-preflight" cfg:"skip_auth_preflight"`
 	FlushInterval                 time.Duration `flag:"flush-interval" cfg:"flush_interval"`
@@ -177,6 +178,7 @@ func NewOptions() *Options {
 		PassAccessToken:                  false,
 		PassHostHeader:                   true,
 		SetAuthorization:                 false,
+		SetAuthorizationType:             "id-token",
 		PassAuthorization:                false,
 		PreferEmailToUser:                false,
 		Prompt:                           "", // Change to "login" when ApprovalPrompt officially deprecated
@@ -211,6 +213,7 @@ func NewFlagSet() *pflag.FlagSet {
 	flagSet.Bool("pass-host-header", true, "pass the request Host Header to upstream")
 	flagSet.Bool("pass-authorization-header", false, "pass the Authorization Header to upstream")
 	flagSet.Bool("set-authorization-header", false, "set Authorization response headers (useful in Nginx auth_request mode)")
+	flagSet.String("set-authorization-type", "id-token", "set Authorization response headers type, can either be id-token or access-token")
 	flagSet.StringSlice("skip-auth-regex", []string{}, "bypass authentication for requests path's that match (may be given multiple times)")
 	flagSet.Bool("skip-provider-button", false, "will skip sign-in-page to directly reach the next step: oauth/start")
 	flagSet.Bool("skip-auth-preflight", false, "will skip authentication for OPTIONS requests")
